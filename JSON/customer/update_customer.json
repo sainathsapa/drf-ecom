@@ -1,0 +1,31 @@
+{
+    "customer_name": "UserName",
+    "customer_email": "mail@zessta.com",
+    "customer_mobile": "9676753138",
+    "customer_default_pin_code": "504103",
+    "customer_address": [
+        {
+            "customer_address_id": 39,
+            "customeraddress_space_name": "SPACE_NAME_UPDATED",
+            "customer_address_hno_street": "HNO_STEERT",
+            "customer_address_city": "CITY_NAME",
+            "customer_address_type": "HOME",
+            "customer_address_pin_code": "504103"
+        },
+
+
+
+// NEW ADDRES
+
+
+{
+    "customeraddress_space_name": "SPACE_NAME_NEW",
+    "customer_address_hno_street": "HNO_STEERT",
+    "customer_address_city": "CITY_NAME",
+    "customer_address_type": "OFFICE",
+    "customer_address_pin_code": "504103"
+}
+
+
+    ]
+}

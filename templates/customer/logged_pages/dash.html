@@ -1,0 +1,202 @@
+{% extends 'customer/base.html'%}
+
+
+{% block title %}
+Dashboard
+{% endblock %}
+{% block BODYBLOCK %}
+
+{% include 'customer/logged_pages/sidebar.html' %}
+
+
+<div class="w-full h-screen overflow-x-hidden border-t flex flex-col">
+    <main class="w-full flex-grow p-6">
+        <div class="mt-4">
+            <div class="flex flex-wrap -mx-6">
+                <!-- ORDERS -->
+
+                <div class="w-full px-6 sm:w-1/2 xl:w-1/3">
+                    <div class="flex items-center px-5 py-6 shadow-sm rounded-md bg-white">
+                        <div class="p-3 rounded-full bg-indigo-600 bg-opacity-75">
+                            <i class="fa-solid fa-basket-shopping  fa-lg text-white"></i>
+                        </div>
+
+                        <div class="mx-5">
+                            <h4 class="text-2xl font-semibold text-gray-700">{{dash_dict.orders}}</h4>
+                            <div class="text-gray-500">Total Orders</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Returns -->
+                <div class="w-full mt-6 px-6 sm:w-1/2 xl:w-1/3 sm:mt-0">
+                    <div class="flex items-center px-5 py-6 shadow-sm rounded-md bg-white">
+                        <div class="p-3 rounded-full bg-orange-600 bg-opacity-75">
+                            <i class="fa-solid  fa-person-walking-arrow-loop-left  fa-lg text-white"></i>
+
+                        </div>
+
+                        <div class="mx-5">
+                            <h4 class="text-2xl font-semibold text-gray-700">{{dash_dict.returns}}</h4>
+                            <div class="text-gray-500">Total Returns</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Shopping Cost -->
+                <div class="w-full mt-6 px-6 sm:w-1/2 xl:w-1/3 xl:mt-0">
+                    <div class="flex items-center px-5 py-6 shadow-sm rounded-md bg-white">
+                        <div class="p-3 rounded-full bg-pink-600 bg-opacity-75">
+                            <i class="fa-solid  fa-map  fa-lg text-white"></i>
+                        </div>
+
+                        <div class="mx-5">
+                            <h4 class="text-2xl font-semibold text-gray-700">{{dash_dict.address}}</h4>
+                            <div class="text-gray-500">Address Listed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <strong>Recent Orders</strong>
+        </div>
+
+        <div class="flex flex-col mt-8">
+            <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+                <div
+                    class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+                    <table class="min-w-full border-collapse  border-slate-500">
+                        <thead>
+                            <tr class="font-bold">
+                                <th
+                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 text-gray-500 uppercase tracking-wider">
+                                    Order ID</th>
+                                <th
+                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4  text-gray-500 uppercase tracking-wider">
+                                    Address</th>
+                                <th
+                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 text-gray-500 uppercase tracking-wider">
+                                    Order Status</th>
+                                <th
+                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 text-gray-500 uppercase tracking-wider">
+                                    Seller</th>
+                                <th
+                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-right text-xs leading-4 text-gray-500 uppercase tracking-wider">
+                                    Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            {%for order in customer_orders %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <i class="fa-solid fa-tag"></i>
+                                        </div>
+
+                                        <div class="ml-4">
+                                            <div class="text-sm leading-5 font-medium text-gray-900">Order ID
+                                                #{{order.customer_orderd_id}}</div>
+                                            <div class="text-sm leading-5 text-gray-500">
+                                                {{order.customer_order_timestamp}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                    <div class="text-sm leading-5 text-gray-900">
+                                        {{order.customer_order_address.get_address_space_name}}</div>
+                                    <div class="text-sm leading-5 text-gray-500">
+                                        {{order.customer_order_address.complete_address}}</div>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        
+                                        {% if order.customer_order_status == 'ORDERED' %}
+                                        bg-yellow-100 text-yellow-800
+                                        {% endif %}
+
+
+                                        {% if order.customer_order_status == 'SHIPPED' %}
+                                        bg-green-100 text-green-800
+                                        {% endif %}
+
+
+                                        {% if order.customer_order_status == 'RETURN' or 'CANCEL' %}
+                                        bg-red-100 text-red-800
+                                        {% endif %}
+
+                                        
+                                        
+                                        ">
+                                        <strong>{{order.customer_order_status}} </strong>
+
+                                        {% if order.customer_order_return %}
+                                        
+                                        <span class="text-gray-800">
+                                            | <strong>  SELLER STATUS -  </strong> 
+                                             {{order.customer_order_returnID.customer_order_return_status}} </span>
+
+                                        {% endif %}
+                                    
+                                    </span>
+                                </td>
+
+                                <td
+                                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+                                    {{order.sellers}}</td>
+
+                                <td
+                                    class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                                    <a href="/customer/view_order/{{order.customer_orderd_id}}"
+                                        class="text-green-600 hover:text-green-900 p-3">
+                                        <i class="fa-solid fa-eye fa-lg"></i> View
+                                    </a>
+
+                                    <div class="mt-3">
+                                    </div>
+
+                                    {% if not order.customer_order_status == "CANCEL"%}
+
+                                    <a href="/customer/cancel_order/{{order.customer_orderd_id}}" onclick= "if (! confirm('Are Sure to cancled Order ')) { return false; }" class="text-red-600 hover:text-red-900 p-3">
+                                        <i class="fa-solid fa-xmark fa-lg"></i> Cancel
+
+
+                                    </a>
+                                    <div class="mt-3">
+                                    </div>
+                                    {% endif %}
+
+
+
+                                    {% if not order.customer_order_return%}
+                                    <a href="/customer/return_order/{{order.customer_orderd_id}}"  onclick= "if (! confirm('Are Sure to Return Order ')) { return false; }" class="text-indigo-600 hover:text-indigo-900 p-3">
+                                        <i class="fa-solid fa-right-left fa-lg"></i> Return
+
+
+                                    </a>
+                                    
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+    </main>
+
+
+</div>
+
+
+</div>
+
+
+
+{% endblock %}

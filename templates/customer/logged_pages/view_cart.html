@@ -1,0 +1,101 @@
+{% extends 'customer/base.html'%}
+
+
+{% block title %}
+View Cart
+{% endblock %}
+{% block BODYBLOCK %}
+
+{% include 'customer/logged_pages/sidebar.html' %}
+
+
+<div class="w-full h-screen overflow-x-hidden border-t flex flex-col">
+    <main class="w-full flex-grow p-6">
+        <form action="/customer/checkout" method="POST">
+            {%csrf_token%}
+
+        <div class="h-screen bg-gray-100 pt-20">
+            <h1 class="mb-10 text-center text-2xl font-bold">Cart Items</h1>
+            <div class="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
+              <div class="rounded-lg md:w-2/3">
+
+
+                {% for Product in products %}
+                <div class="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
+                  <img src="https://picsum.photos/200/200" alt="product-image" class="w-full rounded-lg sm:w-40" />
+                  <div class="sm:ml-4 sm:flex sm:w-full sm:justify-between">
+                    <div class="mt-5 sm:mt-0">
+                      <h2 class="text-lg font-bold text-gray-900">{{Product.product_name}}</h2>
+                      <p class="mt-1 text-xs text-gray-700">{{Product.seller_name}}</p>
+                      <strong><p class="mt-1 text-xs text-gray-700">{{Product.cat_name}}</p></strong>
+
+                    </div>
+                    <div class="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
+
+                      <div class="flex items-center space-x-4">
+                        <p class="text-sm">₹ {{Product.product_price}}</p>
+                       <a href="/customer/remove_bag/{{Product.product_id}}"> <i class="h-5 w-5 cursor-pointer duration-150 hover:text-red-500 fa fa-close"></i></a>
+                        
+                        
+                      </div>
+                      
+                    </div>
+                  </div>
+                  
+                </div>
+                {% endfor %}
+
+
+               
+              </div>
+              <!-- Sub total -->
+              <div class="mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3">
+                <p class="w-48 lg:w-full dark:text-gray-800 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">
+                                        <strong>Choose Address : </strong>
+                                        <br>
+                                        <select class="text-gray-700 font-bold p-2"
+                                            name="customer_address">
+
+                                            {%for address in user_address %}
+                                            <option value="{{address.customer_address_id}}">
+                                                {{address.get_address_space_name}} - {{address.complete_address}}
+                                            </option>
+                                            {%endfor%}
+                                        </select>
+
+                                    </p>
+                                    <br>
+                <div class="mb-2 flex justify-between">
+                  <p class="text-gray-700">Subtotal</p>
+                  <p class="text-gray-700">₹{{product_value}}</p>
+                </div>
+                <div class="flex justify-between">
+                  <p class="text-gray-700">Shipping</p>
+                  <p class="text-gray-700">₹80</p>
+                </div>
+                <hr class="my-4" />
+                <div class="flex justify-between">
+                  <p class="text-lg font-bold">Total</p>
+                  <div class="">
+                    <p class="mb-1 text-lg font-bold">₹{{product_value | add:80}}</p>
+
+                  </div>
+                </div>
+                <button type="submit" class="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600"><i class="fa-solid fa-bag-shopping"></i> Check out</button>
+              </div>
+            </div>
+          </div>
+
+        </form>
+
+    </main>
+
+
+</div>
+
+
+</div>
+
+
+
+{% endblock %}
