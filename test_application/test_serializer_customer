@@ -1,0 +1,52 @@
+from django.test import TestCase
+from customer.models import Customer, Address, Order
+from customer_api.serializers import (
+    CustomerSerializer,
+    CustomerAddressSerilizer,
+    CustomerProfileSerializer,
+    CustomerOrderSerializer,
+)
+from faker import Faker
+
+fake = Faker()
+
+class SerializerTestCase(TestCase):
+    def setUp(self):
+        self.customer_data = {
+            "customer_name": fake.name(),
+            "customer_email": 'sainath.sit@gmail.com',
+            "customer_pwd": fake.password(),
+            # Add other required fields as needed
+        }
+        self.address_data = {
+            "customeraddress_space_name": fake.street_address(),
+            "customer_address_hno_street": fake.building_number(),
+            "customer_address_city": fake.city(),
+            # Add other required fields as needed
+        }
+       
+
+    def test_customer_serializer(self):
+        serializer = CustomerSerializer(data=self.customer_data)
+        self.assertTrue(serializer.is_valid())
+
+    def test_customer_address_serializer(self):
+        serializer = CustomerAddressSerilizer(data=self.address_data)
+        self.assertTrue(serializer.is_valid())
+
+    def test_customer_profile_serializer(self):
+        # Assuming you have a customer object to test with
+        customer = Customer.objects.create(**self.customer_data)
+        address = Address.objects.create(customerID=customer, **self.address_data)
+        customer.customer_address.add(address)
+
+        serializer = CustomerProfileSerializer(instance=customer)
+        self.assertTrue(serializer.data)
+
+    def test_customer_order_serializer(self):
+        # Assuming you have a customer and order object to test with
+        customer = Customer.objects.create(**self.customer_data)
+        order = Order.objects.create(customerID=customer, **self.order_data)
+
+        serializer = CustomerOrderSerializer(instance=order)
+        self.assertTrue(serializer.data)

@@ -11,7 +11,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <link rel="stylesheet" href="/static/style/style.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/style.css' %}" />
     <link
       rel="icon"
       href="https://zessta.com/wp-content/uploads/2022/05/Mask-group-5.svg"
@@ -87,7 +88,7 @@
               <div class="flex flex-shrink-0 items-center">
                 <img
                   class="h-8 w-auto"
-                  src="/static/img/logo.png"
+                  src="{% static 'img/logo.png' %}"
                   alt="Zessta eCommerce"
                 />
               </div>
@@ -172,5 +173,5 @@
 
     {% block BODYBLOCK %} {% endblock %}
   </body>
-  <script src="/static/js/custom.js"></script>
+  <script src="{% static 'js/custom.js' %}"></script>
 </html>

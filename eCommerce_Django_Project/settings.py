@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 from pathlib import Path
 import os
 
@@ -20,17 +21,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-31q%*vwfj@ctu4*+l58mk8y438z%v-)f82#le#5j^a)qo%dwwm"
+SECRET_KEY = "djang-31q%*vwfj@ctu4*+l58mk8y438z%v-)f82#le#5j^a)qo%dwwm"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["http://*.localhost/*", "http://*.0.0.0.0/*"]
 
 # Application definition
 
 INSTALLED_APPS = [
+    "django_crontab",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -43,18 +44,19 @@ INSTALLED_APPS = [
     "seller_api",
     "rest_framework",
     "rest_framework.authtoken",
+    "import_export",
+    "storages",
 ]
 AUTHENTICATION_BACKENDS = [
-    "customer_api.auth.CustomAuthToken",
     "customer_api.auth.CustomAuthBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 # AUTH_USER_MODEL = 'customer.Customer'
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "customer_api.auth.CustomAuthToken",
-        "seller_api.auth.CustomAuthToken",
         "django.contrib.auth.backends.ModelBackend",
+        "customer_api.auth.CustomAuthToken",
+        # "seller_api.auth.CustomAuthToken",
     ),
 }
 MIDDLEWARE = [
@@ -65,6 +67,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "eCommerce_Django_Project.middleware.CustomMiddleWare",
 ]
 
 ROOT_URLCONF = "eCommerce_Django_Project.urls"
@@ -95,7 +98,16 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
+    # Postgres_CONFIG
+    "postgress": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "zessta",
+        "USER": "djsai",
+        "PASSWORD": "djsai",
+        "HOST": "postgres-service",
+        "PORT": "5432",
+    },
 }
 
 
@@ -123,7 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
@@ -133,12 +145,110 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "/static/"
+
+DEP_MODE = os.getenv("DEP_MODE") == "PROD"
+
+if DEP_MODE:
+    # aws settings
+    print("Prod Detected")
+    # AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+
+    # AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+
+    # AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+
+    # AWS_DEFAULT_ACL = "public-read"
+    # STORAGES = {
+    #     "default": {
+    #         "BACKEND": "storages.backends.s3.S3Storage",
+    #     },
+    #     "staticfiles": {
+    #         "BACKEND": "storages.backends.s3.S3Storage",
+    #     },
+    # }
+    # STATIC_ROOT = "https://django-s3-sainath-ecom.s3.ap-southeast-2.amazonaws.com"
+    # MEDIA_ROOT = "https://django-s3-sainath-ecom.s3.ap-southeast-2.amazonaws.com"
+    # MEDIA_URL = "/media/"
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    AWS_DEFAULT_ACL = "public-read"
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+    # static files settings
+    AWS_LOCATION = "static"
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+    # public media settings
+    PUBLIC_MEDIA_LOCATION = "media"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
+    DEFAULT_FILE_STORAGE = (
+        "eCommerce_Django_Project.storage_backends.PublicMediaStorage"
+    )
+
+    DEBUG = False
 
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+else:
+    print("dev detected")
+    DEBUG = True
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+    STATIC_URL = "/static/"
+    STATICFILES_DIRS = [BASE_DIR / "static"]
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+    MEDIA_URL = "/media/"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# EMAIL_CONFIGS
+
+STMP_PORT = 587
+STMP_SERVER = "smtp.gmail.com"
+STMP_LOGIN = "sainath.sapa@zessta.com"
+STMP_PWD = "Djsaikbr123@"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "logs.log",
+        },
+    },
+    "loggers": {
+        "eCommerce_Django_Project": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
+
+
+# CRONS JOBS
+
+CRONJOBS = [
+    (
+        "* * * * *",
+        "eCommerce_Django_Project.crons.my_cron_job",
+        ">> /home/sainath/cron_file.log 2>&1",
+    )
+]

@@ -1,0 +1,41 @@
+version: '3'
+services:
+  web-app:
+    build: .
+
+    # MULTILE_TYPE_PROD_ENV
+    # command: >
+    #   sh -c " python manage.py migrate &&
+    #       gunicorn eCommerce_Django_Project.wsgi:application --bind 0.0.0.0:5000"
+
+    command: >
+      sh -c "bash startup.sh"
+    environment:
+      - DEP_MODE=PROD
+      - AWS_ACCESS_KEY_ID=${AWS_KEY}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_BUCKET_NAME}
+    volumes:
+      - ./:/web-app
+      - static-files:/web-app/prod_static
+
+  postgres-service:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: ${POST_PWD}
+      POSTGRES_USER: ${POST_USER}
+      POSTGRES_DB: ${POST_DB}
+
+  nginx-service:
+    image: nginx
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - static-files:/usr/share/nginx/html/prod_static
+    ports:
+      - "80:80"
+
+    depends_on:
+      - web-app
+
+volumes:
+  static-files:

@@ -6,9 +6,9 @@ urlpatterns = [
     # path('', HomeView.as_view() ,name="API Home"),
 ]
 router = DefaultRouter()
-router.register(r"order", OrderViewSet, basename="orders")
-router.register(r"product", ProductViewSet, basename="orders")
-router.register(r"auth_token", AuthTokenViewSet, basename="AuthToken")
+router.register(r"order", OrderViewSet, basename="orders_seller")
+router.register(r"product", ProductViewSet, basename="prod_seller")
+router.register(r"auth_token_seller", AuthTokenViewSet, basename="AuthToken_seller")
 
 
 urlpatterns += router.urls
